@@ -1,0 +1,119 @@
+NAME
+    selfvars - Provide $self and @args variables for OO programs
+
+SYNOPSIS
+        package MyClass;
+
+        ### Import $self and @args into your package:
+        use selfvars;
+
+        ### Or name the variables explicitly:
+        # use selfvars -self => 'self', -args => 'args';
+
+        ### Write the constructor as usual:
+        sub new {
+            return bless({}, shift);
+        }
+
+        ### Use $self in place of $_[0]:
+        sub foo {
+            $self->{foo};
+        }
+
+        ### Use @args in place of @_[1..$#_]:
+        sub set {
+            my ($foo, $bar) = @args;
+            $self->{foo} = $foo;
+            $self->{bar} = $bar;
+        }
+
+DESCRIPTION
+    This moudles adds $self and @args keywords to your Perl OO module.
+
+    They are really just handy helpers to get rid of:
+
+        my $self = shift;
+
+    Behind the scenes, $self is simply tied to $_[0], and @args to
+    @_[1..$#_]. Note that they are variables, not barewords.
+
+    Currently, both $self and @args are read-only; this means you cannot
+    mutate them:
+
+        $self = 'foo';              # error
+        my $foo = shift @args;      # error
+
+    This restriction may be lifted at a later version of this module, or
+    turned into a configurable option instead.
+
+INTERFACE
+    $self
+        Return the current object.
+
+    @args
+        Return the argument list.
+
+  Choosing non-default names
+    You can choose alternative variable names with explicit import
+    arguments:
+
+        # Use $this and @opts instead of $self and @args:
+        use selfvars -self => 'this', -args => 'opts';
+
+        # Use $this but leave @args alone:
+        use selfvars -self => 'this', -args;
+
+        # Use @opts but leave $self alone:
+        use selfvars -args => 'opts', -self;
+
+    You may also omit a variable name from the explicit import arguments:
+
+        # Import $self but not @args:
+        use selfvars -self => 'self';
+
+        # Same as the above:
+        use selfvars -self;
+
+DEPENDENCIES
+    None.
+
+ACKNOWLEDGEMENTS
+    This module was inspired and based on Kang-min Liu (gugod)'s "self.pm".
+
+    As seen on #perl:
+
+        <gugod> audreyt: selfvars.pm looks exactly like what I want self.pm to be in the beginning
+        <gugod> audreyt: but I can't sort out the last BEGIN{} block like you did.
+        <gugod> audreyt: that's a great job :D
+
+SEE ALSO
+    self
+
+AUTHORS
+    Audrey Tang <cpan@audreyt.org>
+
+COPYRIGHT
+    Copyright 2007 by Audrey Tang <cpan@audreyt.org>.
+
+    This software is released under the MIT license cited below.
+
+  The "MIT" License
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+

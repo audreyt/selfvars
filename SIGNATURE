@@ -1,0 +1,51 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.55.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 5334ef9911cdc8c51d741f1703a0f23f248faf4b Changes
+SHA1 f8b188962fab254734e15a5c034c8db98a9e8904 MANIFEST
+SHA1 3a7bf9b17381d9c768e0617c48be2eabcaeb5aa0 META.yml
+SHA1 694587dac73dda066bc81b5a61e01705b6bd3ceb Makefile.PL
+SHA1 2d24a894266f93c1960e927c5309aa13ce8c3fc8 README
+SHA1 7e2cfa1b9efe0d502ee57717649c90ba4bd28ba9 inc/Module/Install.pm
+SHA1 6e1392d80a0f239eecd5664f7f21f922cedb9329 inc/Module/Install/Base.pm
+SHA1 f69417fe831d9cc22a78f00a617afadceade4d81 inc/Module/Install/Can.pm
+SHA1 c61d02895330310048bf388881b5e2e064031561 inc/Module/Install/Fetch.pm
+SHA1 4933b00c3a646da8d223c6957f94552bbd62f8c6 inc/Module/Install/Include.pm
+SHA1 54fcbed19232ec959bb17cfb4410599afc7f0779 inc/Module/Install/Makefile.pm
+SHA1 7d3be9b158e37b2b2c22084740099955623b1d56 inc/Module/Install/Metadata.pm
+SHA1 0a8b66180229ba2f9deaea1fedd0aacf7a7ace6b inc/Module/Install/Win32.pm
+SHA1 d3352eb33fe43a5f3ead513f645224fe34d73bc9 inc/Module/Install/WriteAll.pm
+SHA1 fb711fed1e4269f7569da5d09980648acf47a750 inc/Test/Builder.pm
+SHA1 028954a5cb377df3f660a7ade8631c265df026cc inc/Test/Builder/Module.pm
+SHA1 0781d008b60551d1bd74d56bf065861f4d84cf9d inc/Test/More.pm
+SHA1 f8e70396a1f3e0b34668d08871d7519321995283 inc/attributes.pm
+SHA1 a19a397abaf87389a0c46065316864432552b995 lib/selfvars.pm
+SHA1 0a009773bc5c2f8f81dcbb1c8bcf2cca9f6152d3 t/00.load.t
+SHA1 ab8c116da1a50c724d125fbcff4256462d7fbc5a t/02.eval.t
+SHA1 ff0fe16fa198bcc80ec539950a745a0f7778e968 t/03.interpolation.t
+SHA1 1f260d2c1bd620d8a2e7bef44fe3b07596a920df t/0simple.t
+SHA1 cc279ceef70c09e92030c5eec0665b08c051bccc t/lib/Counter.pm
+SHA1 0e285ae3f19170f18b8ff5215d266539a7500c5f t/lib/EvalTest.pm
+SHA1 84f3c334898c7c73a5988bedab38fad616f8b477 t/lib/InterpolationTest.pm
+SHA1 83fc3f0010fd3d13dbb1e6916a0091b3e8bea969 t/pod-coverage.t
+SHA1 0190346d7072d458c8a10a45c19f86db641dcc48 t/pod.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (Darwin)
+
+iD8DBQFHdmGytLPdNzw1AaARAvOdAKCP0+yFtt2EE/JMwpSc92ZWtXiqoACgiSNc
+ycD2rNCSd4V90unNTAZBjmY=
+=Tr6c
+-----END PGP SIGNATURE-----
