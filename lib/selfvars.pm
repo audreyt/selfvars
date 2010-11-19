@@ -156,20 +156,21 @@ sub _opts {
         };
         $level++;
     }
+    shift @DB::args;
     @DB::args;
 }
 
 sub readonly { require Carp; Carp::croak('Modification of a read-only %args attempted'); }
 
 sub TIEHASH  { my $x; bless \$x => $_[0] }
-sub FETCH    { my (undef, %o) = _opts(); $o{ $_[1] } }
+sub FETCH    { my (%o) = _opts(); $o{ $_[1] } }
 sub STORE    { readonly }
-sub FIRSTKEY { my (undef, %o) = _opts(); my $a = scalar keys %o; each %o }
+sub FIRSTKEY { my (%o) = _opts(); my $a = scalar keys %o; each %o }
 sub NEXTKEY  { }
-sub EXISTS   { my (undef, %o) = _opts(); exists $o{$_[1]} }
+sub EXISTS   { my (%o) = _opts(); exists $o{$_[1]} }
 sub DELETE   { readonly }
 sub CLEAR    { readonly }
-sub SCALAR   { my (undef, %o) = _opts(); scalar %o }
+sub SCALAR   { my (%o) = _opts(); scalar %o }
 
 
 package selfvars;
