@@ -1,7 +1,7 @@
 package selfvars;
 use 5.005;
 use strict;
-use vars qw( $VERSION $self @args %opts );
+use vars qw( $VERSION $self @args %opts %hopts );
 
 BEGIN {
     $VERSION = '0.11';
@@ -9,7 +9,7 @@ BEGIN {
 
 sub import {
     my $class = shift; # Oooh, the irony!
-    my %vars  = (-self => undef, -args => undef, -opts => undef) unless @_;
+    my %vars  = (-self => undef, -args => undef, -opts => undef, -hopts => undef) unless @_;
 
     while (@_) {
         my $key = shift;
@@ -35,6 +35,10 @@ sub import {
     if (exists $vars{'-opts'}) {
         $vars{'-opts'} = 'opts' unless defined $vars{'-opts'};
         *{"$pkg\::$vars{'-opts'}"} = \%opts;
+    }
+    if (exists $vars{'-hopts'}) {
+        $vars{'-hopts'} = 'hopts' unless defined $vars{'-hopts'};
+        *{"$pkg\::$vars{'-hopts'}"} = \%hopts;
     }
 }
 
@@ -83,40 +87,26 @@ sub _args {
     \@DB::args;
 }
 
+sub readonly { require Carp; Carp::croak('Modification of a read-only @args attempted'); }
+
 sub TIEARRAY  { my $x; bless \$x => $_[0] }
 sub FETCHSIZE { scalar $#{ _args() } }
-sub STORESIZE {
-    require Carp;
-    Carp::croak('Modification of a read-only @args attempted');
-    # $#{ _args() } = $_[1] + 1;
-}
+sub STORESIZE { readonly } # $#{ _args() } = $_[1] + 1;
 sub STORE     { _args()->[ $_[1] + 1 ] = $_[2] }
 sub FETCH     { _args()->[ $_[1] + 1 ] }
-sub CLEAR     {
-    require Carp;
-    Carp::croak('Modification of a read-only @args attempted');
-    # $#{ _args() } = 0;
-}
-sub POP       {
-    require Carp;
-    Carp::croak('Modification of a read-only @args attempted');
-    # my $o = _args(); (@$o > 1) ? pop(@$o) : undef
-}
-sub PUSH      {
-    require Carp;
-    Carp::croak('Modification of a read-only @args attempted');
-    # my $o = _args(); push( @$o, @_ )
-}
-sub SHIFT     {
-    require Carp;
-    Carp::croak('Modification of a read-only @args attempted');
-    # my $o = _args(); splice( @$o, 1, 1 )
-}
-sub UNSHIFT   {
-    require Carp;
-    Carp::croak('Modification of a read-only @args attempted');
-    # my $o = _args(); unshift( @$o, @_ )
-}
+sub CLEAR     { readonly } # $#{ _args() } = 0; 
+sub POP       { readonly } # my $o = _args(); (@$o > 1) ? pop(@$o) : undef
+sub PUSH      { readonly } # my $o = _args(); push( @$o, @_ )
+sub SHIFT     { readonly } # my $o = _args(); splice( @$o, 1, 1 ) 
+sub UNSHIFT   { readonly } # my $o = _args(); unshift( @$o, @_ ) 
+sub DELETE    { readonly } # my $o = _args(); delete $o->[ $_[1] + 1 ]
+sub SPLICE    { readonly } 
+    # my $ob  = shift;
+    # my $sz  = $ob->FETCHSIZE;
+    # my $off = @_ ? shift : 0;
+    # $off += $sz if $off < 0;
+    # my $len = @_ ? shift : $sz - $off;
+    # splice( @$ob, $off + 1, $len, @_ );
 
 BEGIN {
     local $@;
@@ -125,23 +115,6 @@ BEGIN {
             my $o = _args(); exists $o->[ $_[1] + 1 ]
         }
     } if $] >= 5.006;
-}
-
-sub DELETE    {
-    require Carp;
-    Carp::croak('Modification of a read-only @args attempted');
-    # my $o = _args(); delete $o->[ $_[1] + 1 ]
-}
-
-sub SPLICE {
-    require Carp;
-    Carp::croak('Modification of a read-only @args attempted');
-    # my $ob  = shift;
-    # my $sz  = $ob->FETCHSIZE;
-    # my $off = @_ ? shift : 0;
-    # $off += $sz if $off < 0;
-    # my $len = @_ ? shift : $sz - $off;
-    # splice( @$ob, $off + 1, $len, @_ );
 }
 
 package selfvars::opts;
@@ -170,12 +143,42 @@ sub DELETE   { my $o = _opts(); delete $o->{$_[1]} }
 sub CLEAR    { my $o = _opts(); %$o = () }
 sub SCALAR   { my $o = _opts(); scalar %$o }
 
+package selfvars::hopts;
+
+sub _opts {
+    my $level = 2;
+    my @c;
+    while ( !defined( $c[3] ) || $c[3] eq '(eval)' ) {
+        @c = do {
+            package DB;
+            @DB::args = ();
+            caller($level);
+        };
+        $level++;
+    }
+    @DB::args;
+}
+
+sub readonly { require Carp; Carp::croak('Modification of a read-only %args attempted'); }
+
+sub TIEHASH  { my $x; bless \$x => $_[0] }
+sub FETCH    { my (undef, %o) = _opts(); $o{ $_[1] } }
+sub STORE    { readonly }
+sub FIRSTKEY { my (undef, %o) = _opts(); my $a = scalar keys %o; each %o }
+sub NEXTKEY  { }
+sub EXISTS   { my (undef, %o) = _opts(); exists $o{$_[1]} }
+sub DELETE   { readonly }
+sub CLEAR    { readonly }
+sub SCALAR   { my (undef, %o) = _opts(); scalar %o }
+
+
 package selfvars;
 
 BEGIN {
     tie $self => __PACKAGE__ . '::self';
     tie @args => __PACKAGE__ . '::args';
     tie %opts => __PACKAGE__ . '::opts';
+    tie %hopts => __PACKAGE__ . '::hopts';
 }
 
 1;
