@@ -91,16 +91,16 @@ sub readonly { require Carp; Carp::croak('Modification of a read-only @args atte
 
 sub TIEARRAY  { my $x; bless \$x => $_[0] }
 sub FETCHSIZE { scalar $#{ _args() } }
-sub STORESIZE { readonly } # $#{ _args() } = $_[1] + 1;
+sub STORESIZE { goto &readonly } # $#{ _args() } = $_[1] + 1;
 sub STORE     { _args()->[ $_[1] + 1 ] = $_[2] }
 sub FETCH     { _args()->[ $_[1] + 1 ] }
-sub CLEAR     { readonly } # $#{ _args() } = 0; 
-sub POP       { readonly } # my $o = _args(); (@$o > 1) ? pop(@$o) : undef
-sub PUSH      { readonly } # my $o = _args(); push( @$o, @_ )
-sub SHIFT     { readonly } # my $o = _args(); splice( @$o, 1, 1 ) 
-sub UNSHIFT   { readonly } # my $o = _args(); unshift( @$o, @_ ) 
-sub DELETE    { readonly } # my $o = _args(); delete $o->[ $_[1] + 1 ]
-sub SPLICE    { readonly } 
+sub CLEAR     { goto &readonly } # $#{ _args() } = 0; 
+sub POP       { goto &readonly } # my $o = _args(); (@$o > 1) ? pop(@$o) : undef
+sub PUSH      { goto &readonly } # my $o = _args(); push( @$o, @_ )
+sub SHIFT     { goto &readonly } # my $o = _args(); splice( @$o, 1, 1 ) 
+sub UNSHIFT   { goto &readonly } # my $o = _args(); unshift( @$o, @_ ) 
+sub DELETE    { goto &readonly } # my $o = _args(); delete $o->[ $_[1] + 1 ]
+sub SPLICE    { goto &readonly } 
     # my $ob  = shift;
     # my $sz  = $ob->FETCHSIZE;
     # my $off = @_ ? shift : 0;
@@ -164,12 +164,12 @@ sub readonly { require Carp; Carp::croak('Modification of a read-only %args atte
 
 sub TIEHASH  { my $x; bless \$x => $_[0] }
 sub FETCH    { my (%o) = _opts(); $o{ $_[1] } }
-sub STORE    { readonly }
+sub STORE    { goto &readonly }
 sub FIRSTKEY { my (%o) = _opts(); my $a = scalar keys %o; each %o }
 sub NEXTKEY  { }
 sub EXISTS   { my (%o) = _opts(); exists $o{$_[1]} }
-sub DELETE   { readonly }
-sub CLEAR    { readonly }
+sub DELETE   { goto &readonly }
+sub CLEAR    { goto &readonly }
 sub SCALAR   { my (%o) = _opts(); scalar %o }
 
 
@@ -198,7 +198,7 @@ selfvars - Provide $self, @args and %opts variables for OO programs
     use selfvars;
 
     ### Or name the variables explicitly:
-    # use selfvars -self => 'self', -args => 'args', -opts => 'opts';
+    # use selfvars -self => 'self', -args => 'args', -opts => 'opts', -hopts => 'hopts';
 
     ### Write the constructor as usual:
     sub new {
@@ -221,6 +221,11 @@ selfvars - Provide $self, @args and %opts variables for OO programs
     sub baz {
         $self->{x} = $opts{x};
         $self->{y} = $opts{y};
+    }
+    ### Use %hopts with $obj->yada( x => 1, y => 2 ) call syntax
+    sub yada {
+        $self->{x} = $hopts{x}
+        $self->{y} = $hopts{y}
     }
 
 =head1 DESCRIPTION
@@ -263,6 +268,10 @@ Returns the argument list.
 =item %opts
 
 Returns the first argument, which must be a hash reference, as a hash.
+
+=item %hopts
+
+Returns the arguments list as a hash.
 
 =back
 

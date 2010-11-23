@@ -12,4 +12,8 @@ sub hopts {
 	return join ' ', $this->{v}, $args{'param'};
 }
 
+sub die_in_action {
+	$args{'param'} = undef;
+}
+
 1;
