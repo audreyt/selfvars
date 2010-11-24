@@ -1,3 +1,18 @@
+[Changes for 0.20 - 2010-11-23]
+
+* Added %hopts for ($self, key => value) styled calls:
+
+    package Foo;
+    use selfvars;
+    sub meth {
+        $self->{x} = $hopts{x};
+    }
+
+    # Call it like this:
+    $foo->meth(x => 4);
+
+  Contributed by Roman Galeev.
+
 [Changes for 0.11 - 2010-07-09]
 
 * LICENSING CHANGE: This compilation and all individual files in it

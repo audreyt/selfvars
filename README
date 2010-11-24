@@ -1,14 +1,15 @@
 NAME
-    selfvars - Provide $self and @args variables for OO programs
+    selfvars - Provide $self, @args, %opts and %hopts variables for OO
+    programs
 
 SYNOPSIS
         package MyClass;
 
-        ### Import $self and @args into your package:
+        ### Import $self, @args, %opts and %hopts into your package:
         use selfvars;
 
         ### Or name the variables explicitly:
-        # use selfvars -self => 'self', -args => 'args';
+        # use selfvars -self => 'self', -args => 'args', -opts => 'opts', -hopts => 'hopts';
 
         ### Write the constructor as usual:
         sub new {
@@ -21,21 +22,32 @@ SYNOPSIS
         }
 
         ### Use @args in place of @_[1..$#_]:
-        sub set {
+        sub bar {
             my ($foo, $bar) = @args;
             $self->{foo} = $foo;
             $self->{bar} = $bar;
         }
 
+        ### Use %opts in place of %{$_[1]}:
+        sub baz {
+            $self->{x} = $opts{x};
+            $self->{y} = $opts{y};
+        }
+        ### Use %hopts with $obj->yada( x => 1, y => 2 ) call syntax
+        sub yada {
+            $self->{x} = $hopts{x}
+            $self->{y} = $hopts{y}
+        }
+
 DESCRIPTION
-    This moudles adds $self and @args keywords to your Perl OO module.
+    This moudles exports three special variables: $self, @args and %opts.
 
     They are really just handy helpers to get rid of:
 
         my $self = shift;
 
-    Behind the scenes, $self is simply tied to $_[0], and @args to
-    @_[1..$#_]. Note that they are variables, not barewords.
+    Behind the scenes, $self is simply tied to $_[0], @args to @_[1..$#_],
+    and %opts to "%{$_[1]}".
 
     Currently, both $self and @args are read-only; this means you cannot
     mutate them:
@@ -46,33 +58,48 @@ DESCRIPTION
     This restriction may be lifted at a later version of this module, or
     turned into a configurable option instead.
 
+    However, %opts is not read-only, and can be mutated freely:
+
+        $opts{x} = 'y';             # okay
+        delete $opts{x};            # also okay
+
 INTERFACE
     $self
-        Return the current object.
+        Returns the current object.
 
     @args
-        Return the argument list.
+        Returns the argument list.
+
+    %opts
+        Returns the first argument, which must be a hash reference, as a
+        hash.
+
+    %hopts
+        Returns the arguments list as a hash.
 
   Choosing non-default names
     You can choose alternative variable names with explicit import
     arguments:
 
-        # Use $this and @opts instead of $self and @args:
-        use selfvars -self => 'this', -args => 'opts';
+        # Use $this and @vars instead of $self and @args, leaving %opts alone:
+        use selfvars -self => 'this', -args => 'vars', -opts;
 
-        # Use $this but leave @args alone:
-        use selfvars -self => 'this', -args;
+        # Use $this but leave @args and %opts alone:
+        use selfvars -self => 'this', -args, -opts;
 
-        # Use @opts but leave $self alone:
-        use selfvars -args => 'opts', -self;
+        # Use @vars but leave $self and %opts alone:
+        use selfvars -args => 'vars', -self, -opts;
 
     You may also omit a variable name from the explicit import arguments:
 
-        # Import $self but not @args:
+        # Import $self but not @args nor %opts:
         use selfvars -self => 'self';
 
         # Same as the above:
         use selfvars -self;
+
+        # Import $self and %opts but not @args:
+        use selfvars -self, -opts;
 
 DEPENDENCIES
     None.
@@ -90,30 +117,13 @@ SEE ALSO
     self
 
 AUTHORS
-    Audrey Tang <cpan@audreyt.org>
+    唐鳳 <cpan@audreyt.org>
 
-COPYRIGHT
-    Copyright 2007 by Audrey Tang <cpan@audreyt.org>.
+CC0 1.0 Universal
+    To the extent possible under law, 唐鳳 has waived all copyright and
+    related or neighboring rights to selfvars.
 
-    This software is released under the MIT license cited below.
+    This work is published from Taiwan.
 
-  The "MIT" License
-    Permission is hereby granted, free of charge, to any person obtaining a
-    copy of this software and associated documentation files (the
-    "Software"), to deal in the Software without restriction, including
-    without limitation the rights to use, copy, modify, merge, publish,
-    distribute, sublicense, and/or sell copies of the Software, and to
-    permit persons to whom the Software is furnished to do so, subject to
-    the following conditions:
-
-    The above copyright notice and this permission notice shall be included
-    in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    <http://creativecommons.org/publicdomain/zero/1.0>
 
