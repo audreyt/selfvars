@@ -4,7 +4,7 @@ use strict;
 use vars qw( $VERSION $self @args %opts %hopts );
 
 BEGIN {
-    $VERSION = '0.11';
+    $VERSION = '0.20';
 }
 
 sub import {
@@ -188,13 +188,13 @@ __END__
 
 =head1 NAME
 
-selfvars - Provide $self, @args and %opts variables for OO programs
+selfvars - Provide $self, @args, %opts and %hopts variables for OO programs
 
 =head1 SYNOPSIS
 
     package MyClass;
 
-    ### Import $self, @args and %opts into your package:
+    ### Import $self, @args, %opts and %hopts into your package:
     use selfvars;
 
     ### Or name the variables explicitly:
