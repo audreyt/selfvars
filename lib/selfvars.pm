@@ -4,7 +4,7 @@ use strict;
 use vars qw( $VERSION $self @args %opts %hopts );
 
 BEGIN {
-    $VERSION = '0.20';
+    $VERSION = '0.22';
 }
 
 sub import {
@@ -24,21 +24,11 @@ sub import {
     my $pkg = caller;
 
     no strict 'refs';
-    if (exists $vars{'-self'}) {
-        $vars{'-self'} = 'self' unless defined $vars{'-self'};
-        *{"$pkg\::$vars{'-self'}"} = \$self;
-    }
-    if (exists $vars{'-args'}) {
-        $vars{'-args'} = 'args' unless defined $vars{'-args'};
-        *{"$pkg\::$vars{'-args'}"} = \@args;
-    }
-    if (exists $vars{'-opts'}) {
-        $vars{'-opts'} = 'opts' unless defined $vars{'-opts'};
-        *{"$pkg\::$vars{'-opts'}"} = \%opts;
-    }
-    if (exists $vars{'-hopts'}) {
-        $vars{'-hopts'} = 'hopts' unless defined $vars{'-hopts'};
-        *{"$pkg\::$vars{'-hopts'}"} = \%hopts;
+    my %map = (self => \$self, args => \@args, opts => \%opts, hopts => \%hopts);
+    while (my ($sym, $var) = each %map) {
+        exists $vars{"-$sym"} or next;
+        $vars{"-$sym"} = $sym unless defined $vars{"-$sym"};
+        *{"$pkg\::$vars{qq[-$sym]}"} = $var;
     }
 }
 
@@ -160,7 +150,7 @@ sub _opts {
     @DB::args;
 }
 
-sub readonly { require Carp; Carp::croak('Modification of a read-only %args attempted'); }
+sub readonly { require Carp; Carp::croak('Modification of a read-only %hopts attempted'); }
 
 sub TIEHASH  { my $x; bless \$x => $_[0] }
 sub FETCH    { my (%o) = _opts(); $o{ $_[1] } }
@@ -185,6 +175,8 @@ BEGIN {
 1;
 
 __END__
+
+=encoding utf8
 
 =head1 NAME
 
@@ -230,20 +222,22 @@ selfvars - Provide $self, @args, %opts and %hopts variables for OO programs
 
 =head1 DESCRIPTION
 
-This moudles exports three special variables: C<$self>, C<@args> and C<%opts>.
+This moudles exports four special variables: C<$self>, C<@args>, C<%opts> and C<%hopts>.
 
 They are really just handy helpers to get rid of:
 
     my $self = shift;
 
 Behind the scenes, C<$self> is simply tied to C<$_[0]>, C<@args> to
-C<@_[1..$#_]>, and C<%opts> to C<%{$_[1]}>.
+C<@_[1..$#_]>, C<%opts> to C<%{$_[1]}>, and C<%hopts%> to C<%{{@_[1..$#_]}}>.
 
-Currently, both C<$self> and C<@args> are read-only; this means you cannot
+Currently, C<$self>, C<@args> and C<%hopts> are read-only; this means you cannot
 mutate them:
 
     $self = 'foo';              # error
     my $foo = shift @args;      # error
+    $hopts{x} = 'y';            # error
+    delete $hopts{x};           # error
 
 This restriction may be lifted at a later version of this module, or turned
 into a configurable option instead.
@@ -279,24 +273,24 @@ Returns the arguments list as a hash.
 
 You can choose alternative variable names with explicit import arguments:
 
-    # Use $this and @vars instead of $self and @args, leaving %opts alone:
-    use selfvars -self => 'this', -args => 'vars', -opts;
+    # Use $this and @vars instead of $self and @args, leaving %opts and %hopts alone:
+    use selfvars -self => 'this', -args => 'vars', -opts, -hopts;
 
-    # Use $this but leave @args and %opts alone:
-    use selfvars -self => 'this', -args, -opts;
+    # Use $this but leave @args, %opts and %hopts alone:
+    use selfvars -self => 'this', -args, -opts, -hopts;
 
-    # Use @vars but leave $self and %opts alone:
-    use selfvars -args => 'vars', -self, -opts;
+    # Use @vars but leave $self, %opts and %hopts alone:
+    use selfvars -args => 'vars', -self, -opts, -hopts;
 
-You may also omit a variable name from the explicit import arguments:
+You may also omit one or more variable names from the explicit import arguments:
 
-    # Import $self but not @args nor %opts:
+    # Import $self but not @args, %opts nor %hopts:
     use selfvars -self => 'self';
 
     # Same as the above:
     use selfvars -self;
 
-    # Import $self and %opts but not @args:
+    # Import $self and %opts but not @args nor %hopts:
     use selfvars -self, -opts;
 
 =head1 DEPENDENCIES

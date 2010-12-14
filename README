@@ -40,20 +40,23 @@ SYNOPSIS
         }
 
 DESCRIPTION
-    This moudles exports three special variables: $self, @args and %opts.
+    This moudles exports four special variables: $self, @args, %opts and
+    %hopts.
 
     They are really just handy helpers to get rid of:
 
         my $self = shift;
 
     Behind the scenes, $self is simply tied to $_[0], @args to @_[1..$#_],
-    and %opts to "%{$_[1]}".
+    %opts to "%{$_[1]}", and "%hopts%" to "%{{@_[1..$#_]}}".
 
-    Currently, both $self and @args are read-only; this means you cannot
+    Currently, $self, @args and %hopts are read-only; this means you cannot
     mutate them:
 
         $self = 'foo';              # error
         my $foo = shift @args;      # error
+        $hopts{x} = 'y';            # error
+        delete $hopts{x};           # error
 
     This restriction may be lifted at a later version of this module, or
     turned into a configurable option instead.
@@ -81,24 +84,25 @@ INTERFACE
     You can choose alternative variable names with explicit import
     arguments:
 
-        # Use $this and @vars instead of $self and @args, leaving %opts alone:
-        use selfvars -self => 'this', -args => 'vars', -opts;
+        # Use $this and @vars instead of $self and @args, leaving %opts and %hopts alone:
+        use selfvars -self => 'this', -args => 'vars', -opts, -hopts;
 
-        # Use $this but leave @args and %opts alone:
-        use selfvars -self => 'this', -args, -opts;
+        # Use $this but leave @args, %opts and %hopts alone:
+        use selfvars -self => 'this', -args, -opts, -hopts;
 
-        # Use @vars but leave $self and %opts alone:
-        use selfvars -args => 'vars', -self, -opts;
+        # Use @vars but leave $self, %opts and %hopts alone:
+        use selfvars -args => 'vars', -self, -opts, -hopts;
 
-    You may also omit a variable name from the explicit import arguments:
+    You may also omit one or more variable names from the explicit import
+    arguments:
 
-        # Import $self but not @args nor %opts:
+        # Import $self but not @args, %opts nor %hopts:
         use selfvars -self => 'self';
 
         # Same as the above:
         use selfvars -self;
 
-        # Import $self and %opts but not @args:
+        # Import $self and %opts but not @args nor %hopts:
         use selfvars -self, -opts;
 
 DEPENDENCIES

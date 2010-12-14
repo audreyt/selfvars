@@ -9,6 +9,6 @@ use Test::More tests => 2;
     eval {
        $o->die_in_action;
 	 };
-    is($@, "Modification of a read-only %args attempted at t/lib/HOpts.pm line 16\n");
+    is($@, "Modification of a read-only %hopts attempted at t/lib/HOpts.pm line 16\n");
 }
 

@@ -1,3 +1,11 @@
+[Changes for 0.21 - 2010-11-29]
+
+* Improved POD for %hopts; no functional changes.
+
+* Trying to mutate %hopts now fails with this error message:
+    "Modification of a read-only %hopts attempted"
+  which was erroneously listed as "%args" in 0.20.
+
 [Changes for 0.20 - 2010-11-23]
 
 * Added %hopts for ($self, key => value) styled calls:
