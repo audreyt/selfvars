@@ -1,3 +1,7 @@
+[Changes for 0.21 - 2010-12-14]
+
+* Add =encoding utf8 to POD; no functional changes.
+
 [Changes for 0.21 - 2010-11-29]
 
 * Improved POD for %hopts; no functional changes.
