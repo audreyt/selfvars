@@ -4,7 +4,7 @@ use strict;
 use vars qw( $VERSION $self @args %opts %hopts );
 
 BEGIN {
-    $VERSION = '0.22';
+    $VERSION = '0.31';
 }
 
 sub import {
@@ -214,6 +214,7 @@ selfvars - Provide $self, @args, %opts and %hopts variables for OO programs
         $self->{x} = $opts{x};
         $self->{y} = $opts{y};
     }
+
     ### Use %hopts with $obj->yada( x => 1, y => 2 ) call syntax
     sub yada {
         $self->{x} = $hopts{x}
@@ -222,7 +223,7 @@ selfvars - Provide $self, @args, %opts and %hopts variables for OO programs
 
 =head1 DESCRIPTION
 
-This moudles exports four special variables: C<$self>, C<@args>, C<%opts> and C<%hopts>.
+This module exports four special variables: C<$self>, C<@args>, C<%opts> and C<%hopts>.
 
 They are really just handy helpers to get rid of:
 

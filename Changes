@@ -1,4 +1,9 @@
-[Changes for 0.21 - 2010-12-14]
+[Changes for 0.31 - 2011-05-27]
+
+* Introduce "selfvars::autoload", a helper module that makes it
+  possible to write Mojolicious applications with Dancer syntax.
+
+[Changes for 0.22 - 2010-12-14]
 
 * Add =encoding utf8 to POD; no functional changes.
 
