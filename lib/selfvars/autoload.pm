@@ -79,7 +79,7 @@ In addition to that, this module sets up an C<AUTOLOAD> subroutine in the import
 package, so any calls to missing functions becomes a method call with C<$_[0]> as
 the invocant.
 
-If C<$_[0]> is not present, then we ranse an C<Undefined subroutine> exception as usual.
+If C<$_[0]> is not present, then we raise an C<Undefined subroutine> exception as usual.
 
 The net effect is that we can start writing Mojolicious apps with Dancer syntax. :-)
 
