@@ -45,7 +45,7 @@ selfvars::autoload - Turn missing_sub(...) into $_[0]->missing_sub(...) implicit
 
 =head1 SYNOPSIS
 
-    use Mojolicious::Lite; # The raison d'etre for this module...
+    use Mojolicious::Lite; # The raison d'être for this module...
 
     # Import $self, @args, %opts and %hopts into your package;
     # see "perldoc selfvars" for import options and usage.
