@@ -6,12 +6,12 @@ use selfvars ();
 sub import {
     no strict 'refs';
     my $pkg = caller;
-    *{"$pkg\::AUTOLOAD"} = \&autoload;
+    *{"$pkg\::AUTOLOAD"} = \&_autoload;
     shift; unshift @_, 'selfvars';
     goto &selfvars::import;
 }
 
-sub autoload {
+sub _autoload {
     no strict 'vars';
     my $method = $AUTOLOAD;
 
